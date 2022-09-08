@@ -65,16 +65,19 @@ const loginUser = async function (req, res) {
   try {
       let userName = req.body.email;
       let password = req.body.password;
-      let user = await authorModel.findOne({ email: userName, password: password });
+      let user = await authorModel.findOne({ email: userName});
       if (!user) {
-          return res.status(401).send({ status: false, msg: "username or the password is not corerct", });
+          return res.status(401).send({ status: false, msg: "username is not corerct", });
       }
-
+      let pass=await authorModel.findOne({ password:password});
+      if (!pass) {
+        return res.status(401).send({ status: false, msg: "password is not corerct", });
+    }
       let token = jwt.sign(
           {
               userId: user._id.toString(),
               batch: "project1",
-              organisation: "group1",
+              organisation: "group36",
           },
           "functionup-plutonium"
       );
@@ -87,5 +90,5 @@ const loginUser = async function (req, res) {
 
 }
 
-;module.exports.loginUser=loginUser
+module.exports.loginUser=loginUser
 module.exports.createAuthor = createAuthor;

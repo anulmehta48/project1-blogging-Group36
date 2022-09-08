@@ -32,7 +32,7 @@ router.delete(
 router.delete(
   "/blogs",
   auth.authenticate,
-  auth.authorise,
+  auth.authorize,
   blogController.deleteBlogByCategory
 );
 

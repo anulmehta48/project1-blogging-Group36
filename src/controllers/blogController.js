@@ -123,13 +123,6 @@ const deleteBlog = async (req, res) => {
 const deleteBlogByCategory = async (req, res) => {
   try {
     const query = req.query;
-  if (Object.keys(query).length==0){
-      return res.status(401).send({status:false, msg:"query is mandatory"})
-    }
-    const a= await blogModel.find(query)
-    if (a.length==0){
-     return res.status(404).send({status : false, msg: "data not found"})
-    }
     if (query) {
       const deletedBlogByQuery = await blogModel.updateMany(
         {
