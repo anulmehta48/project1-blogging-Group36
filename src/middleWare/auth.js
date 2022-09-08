@@ -26,10 +26,7 @@ const authorise = async function (req, res, next) {
       // let reqAuthor=req.query.authorId
       let requestBlogId = req.params.blogsId
       let BlogData=await blogModel.findById(requestBlogId)
-      // console.log(BlogData)
       let blogAuthor=BlogData.authorId.toString()
-      console.log(req.loggedInAuthor);
-      console.log(blogAuthor);
       if (blogAuthor != req.loggedInAuthor) {
          return res.status(403).send({ status: false, msg: " this User not valid" })
       }
