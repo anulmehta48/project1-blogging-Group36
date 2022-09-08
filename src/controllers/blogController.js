@@ -4,6 +4,10 @@ const mongoose = require("mongoose");
 //-------------------------------------------------------------------------------------------------------------------//
 const createBlog = async (req, res) => {
   try {
+     let requestUserId = req.body.authorId
+        if (requestUserId !== req.loggedInUser) {
+            res.status(403).send({ status: false, msg: "Permission Denied for this User" })
+        }
     let Blog = req.body;
     if (Object.keys(Blog).length == 0) {
       return res.status(400).send({
