@@ -23,7 +23,6 @@ const authenticate = function (req, res, next) {
 
 const authorise = async function (req, res, next) {
   try {
-      // let reqAuthor=req.query.authorId
       let requestBlogId = req.params.blogsId
       let BlogData=await blogModel.findById(requestBlogId)
       let blogAuthor=BlogData.authorId.toString()
