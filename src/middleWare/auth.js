@@ -5,16 +5,14 @@ const authenticate = function (req, res, next) {
   try {
     let token = req.headers["x-api-key"];
     if (!token) {
-      return res
-        .status(404)
-        .send({ status: false, msg: "token must be present" });
+      return res.status(404).send({ status: false, msg: "token must be present" });
     }
-   
+
     let decodedToken = jwt.verify(token, "functionup-plutonium");
     if (!decodedToken) {
-      return res.status(400).send({ status: false, msg: "token is invalid" });
+      return res.status(401).send({ status: false, msg: "token is invalid" });
     }
-    req.loggedInAuthor = decodedToken.userId;
+    req.loggedInUser = decodedToken.userId;
     next();
   } catch (err) {
     res.status(500).send({ msg: "server error", error: err });
@@ -23,33 +21,51 @@ const authenticate = function (req, res, next) {
 
 const authorise = async function (req, res, next) {
   try {
-      let requestBlogId = req.params.blogsId
-      let BlogData=await blogModel.findById(requestBlogId)
-      let blogAuthor=BlogData.authorId.toString()
-      if (blogAuthor != req.loggedInAuthor) {
-         return res.status(403).send({ status: false, msg: " this User not valid" })
-      }
-      next()
+    let requestBlogId = req.params.blogId
+    let BlogData = await blogModel.findById(requestBlogId)
+    let blogAuthor = BlogData.authorId.toString()
+    if (blogAuthor != req.loggedInUser) {
+      return res.status(403).send({ status: false, msg: " Permission is Denied for this User" })
+    }
+    next()
   } catch (err) {
-      return res.status(500).send({ msg: "server error", error: err });
+    return res.status(500).send({ msg: "server error", error: err });
   }
 
 };
- 
-const authorize = async function(req,res,next){
+
+const authorize = async function (req, res, next) {
   try {
-    const query = req.query;
-    if (Object.keys(query).length==0){
-        return res.status(401).send({status:false, msg:"query is mandatory"})
+    if (Object.keys(req.query).length == 0) {
+      return res.status(400).send({ status: false, msg: "please enter a query" })
+    }
+  
+    let validAuthor = req.loggedInUser
+    let RequestedQueryId = req.query.authorId
+    if (RequestedQueryId !== validAuthor) {
+      return res.status(403).send({ status: false, msg: " Permission is Denied for this User " })
+    }
+    let savedData = await blogModel.find(req.query)
+    if (!savedData[0]) {
+      return res.status(400).send({ status: false, msg: "no blog exists with the given query" })
+    }
+
+    let arr = []
+    for (let i = 0; i < savedData.length; i++) {
+      if (savedData[i].authorId == validAuthor) {
+        arr.push(savedData[i].authorId)
       }
-      const a= await blogModel.find(query)
-      if (a.length==0){
-       return res.status(404).send({status : false, msg: "data not found"})
-      }
-    next()
-} catch (err) {
+    }
+
+    if (arr[0] != validAuthor) {
+      return res.status(403).send({ status: false, msg: "you are not authorized" })
+    } else {
+      next()
+    }
+
+  } catch (err) {
     return res.status(500).send({ msg: "server error", error: err });
-}
+  }
 
 }
 

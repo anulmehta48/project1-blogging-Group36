@@ -13,29 +13,14 @@ router.post("/authors", authorController.createAuthor);
 
 router.post("/blogs", auth.authenticate, blogController.createBlog);
 
-router.get("/getBlogs", auth.authenticate, blogController.getBlogs);
+router.get("/blogs", auth.authenticate, blogController.getBlogs);
 
-router.put(
-  "/Blogs/:blogsId",
-  auth.authenticate,
-  auth.authorise,
-  blogController.updateBlog
-);
+router.put("/blogs/:blogId", auth.authenticate,auth.authorise,blogController.updateBlog);
 
-router.delete(
-  "/Blogs/:blogsId",
-  auth.authenticate,
-  auth.authorise,
-  blogController.deleteBlog
-);
+router.delete("/blogs/:blogId", auth.authenticate, auth.authorise,blogController.deleteBlog);
 
-router.delete(
-  "/blogs",
-  auth.authenticate,
-  auth.authorize,
-  blogController.deleteBlogByCategory
-);
+router.delete("/blogs",auth.authenticate, auth.authorize,blogController.deleteBlogByCategory);
 
-router.post("/login",authorController.loginUser);
+router.post("/login", authorController.loginUser);
 
 module.exports = router;
